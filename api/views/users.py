@@ -13,7 +13,7 @@ from rest_framework.authtoken.models import Token
 from django.dispatch import receiver, Signal
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
-from api.serializers import GroupSerializer, GroupPermission
+from api.serializers import GroupSerializer, GroupPermission, UserSerializer
 import datetime
 
 # This view is purposely used for testing only, improvement is considered and might used in further development
@@ -44,6 +44,19 @@ class CustomAuthToken(ObtainAuthToken):
             'user_level':employee.user_level,
             'email': user.email
         })
+
+
+@api_view(['POST'])
+def createUser(request):
+    if request.method == "POST":
+        serializer = UserSerializer()
+        if serializer.is_valid():
+            user = serializer.save(commit=False)
+            user.set_password(user.password)
+            user.save()
+            return Response("berhasil membuat user", status=status.HTTP_201_CREATED)
+        else:
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MasterUser(APIView):

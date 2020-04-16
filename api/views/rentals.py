@@ -209,15 +209,15 @@ class NestedRentalRegisterDetails(APIView):
                 serializers.save()
                 update_on_rental_register.send(sender=rental_header, test=serializers.data)
                 return Response(serializers.data, status=status.HTTP_200_OK)
-            elif request.data['status'] == "KEMBALI RENTAL" and request.user.is_superuser == True:
+            elif request.data['status'] == "KEMBALI RENTAL" and request.user.is_active == True:
                 serializers.save()
                 rental_header.objects.filter(rental_header_id=pk).update(status="APPROVED")
                 return Response(serializers.data,status=status.HTTP_200_OK)
-            elif request.data['status'] == "SELESAI" and request.user.is_superuser == True:
+            elif request.data['status'] == "SELESAI" and request.user.is_active == True:
                 serializers.save()
                 rental_header.objects.filter(rental_header_id=pk).update(status="SELESAI")
                 return Response(serializers.data,status=status.HTTP_200_OK)
-            elif request.data['status'] == "APPROVED" and request.user.is_superuser == False:
+            elif request.data['status'] == "APPROVED" and request.user.is_active == False:
                 return Response("Access Denied", status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -261,14 +261,14 @@ class NestedReceivingManagementDetails(APIView):
             request.data['approval1_date'] = datetime.datetime.today().strftime('%Y-%m-%d')
         serializer = NestedReceivingHeaderWriteSerializer(header, data=request.data)
         if serializer.is_valid():
-            if request.data['status'] == "APPROVED" and request.user.is_superuser == True:
+            if request.data['status'] == "APPROVED" and request.user.is_active == True:
                 serializer.save()
                 update_on_nested_serializer.send(sender=receiving_header, test=serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             elif request.data['status'] == "DRAFT":
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            elif request.data['status'] == "APPROVED" and request.user.is_superuser == False:
+            elif request.data['status'] == "APPROVED" and request.user.is_active == False:
                 return Response("Access Denied", status=status.HTTP_401_UNAUTHORIZED)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -309,14 +309,14 @@ class NestedRentalOrderManagementDetails(APIView):
         rentalOrderHeader = self.get_object(pk)
         serializers = NestedRentalOrderHeaderWriteSerializer(rentalOrderHeader, data=request.data)
         if serializers.is_valid():
-            if request.data['status'] == "APPROVED" and request.user.is_superuser == True:
+            if request.data['status'] == "APPROVED" and request.user.is_active == True:
                 serializers.save()
                 update_on_rental_order.send(sender=rental_order_header, test=serializers.data)
                 return Response(serializers.data, status=status.HTTP_200_OK)
-            elif request.data['status'] == "DRAFT" and request.user.is_superuser == True:
+            elif request.data['status'] == "DRAFT" and request.user.is_active == True:
                 serializers.save()
                 return Response(serializers.data, status=status.HTTP_200_OK)                
-            elif request.data['status'] == "APPROVED" and request.user.is_superuser == False:
+            elif request.data['status'] == "APPROVED" and request.user.is_active == False:
                 return Response("Access denied", status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 

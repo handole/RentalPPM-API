@@ -2,7 +2,7 @@ from rest_framework import routers
 from django.conf.urls import include
 from django.conf.urls import url
 from .viewset import *
-from .views.users import testView, MasterUser
+from .views.users import testView, MasterUser, createUser
 from .views import auth, employee, items, stock, rentals, invoice
 
 router = routers.DefaultRouter()
@@ -32,6 +32,7 @@ urlpatterns = {
 	url(r'^', include(router.urls)),
 	url(r'^testView/', testView),
 	url(r'^masterUser/', MasterUser.as_view()),
+    url(r'^createUser/', createUser, name="createuser"),
 
 	# authenticate
 	url(r'^signup/', auth.signup, name='signup'),

@@ -1,0 +1,92 @@
+Install Python, Django, and Other Dependencies in Linode
+Django is dependent on quite a few software packages. You'll need Python, Django, your database with Python drivers, setuptools, mod_wsgi. For Ubuntu:
+
+- $ apt-get install python-setuptools
+- $ apt-get install libapache2-mod-wsgi
+- $ apt-get install postgresql
+- $ apt-get install python-psycopg2
+
+Now use easy_install to install Django:
+
+- $ easy_install Django
+
+That's it for Django. You've got it installed and are able to run it just like how you run it on your local laptop. However, you got this VPS to run an application in production! The development server doesn't cut it for serving production websites. Next, you'll need to configure Apache with mod_wsgi.
+
+Apache and mod_wsgi
+
+Your application will need a .wsgi file which is used to configure mod_wsgi. Just place this configuration file into the root of your project directory:
+
+==================================================================================
+import os
+import sys
+
+sys.path.append('/path/to/application')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()
+===================================================================================
+
+Make sure you replace the /path/to/application string with the actual path to your Django application.
+
+In your Apache configuration, for the VirtualHost of your website, you'll need to add a few line to configure WSGI:
+
+===========================================================
+WSGIScriptAlias / /path/to/application/django.wsgi
+<Directory /path/to/application>
+  Order allow,deny
+  Allow from all
+</Directory>
+===========================================================
+
+The above lines will forward requests along to your Django application. You'll still need to configure your static resources. You'll want Apache, an amazing web server, to serve your static assets for you:
+
+- Alias /static /path/to/application/public_html/static
+- Alias /images /path/to/application/public_html/images
+
+Be sure to add aliases for any other static asset directories and paths.
+
+Whenever you modify the configuration file for Apache or the WSGI file in your application directory, be sure to restart the server with:
+
+- $ /etc/init.d/apache2 restart
+
+And you should be good to go!
+
+
+
+# Rest API Rental PPM
+"Repository for rental project" 
+
+### How to use
+#### Preparation 
+
+- Python 3.8 above
+
+- pip
+
+- virtualenv
+
+- postgresql 
+
+#### Install Library
+
+- `virtualenv ven`
+- `activate`
+
+Go to app directory
+
+- `pip install -r requirements.txt`
+
+After all library installed, migrate database
+
+- `python manage.py makemigrations`
+
+- `python manage.py migrate`
+
+create super user
+
+- `python manage.py createsuperuser`
+
+Running aplication
+
+- `python manage.py runserver`  
